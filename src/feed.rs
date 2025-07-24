@@ -27,7 +27,6 @@ pub fn feed_format(item: &rss::Item) -> String {
         .replace("<!-- raw HTML omitted -->", "");
 
     let link = item.link().unwrap_or("No link");
-    //format!("**{}**\n*Published: {}*\n{}\n[{}]({})", title, pub_date, description, title, link)
     format!("**{title}**\n*Published: {pub_date}*\n{description}\n[{title}]({link})")
 }
 
@@ -47,7 +46,6 @@ pub async fn feed_interval(
                     .guid()
                     .map(|g| g.value().to_string())
                     .unwrap_or_else(|| format!("default-{}", chrono::Utc::now().timestamp()));
-                //if last_entry_ids.get(url).map_or(true, |id| id !=&entry_id) {
                 if last_entry_ids.get(url) != Some(&entry_id) {
                     let message = feed_format(entry);
                     let channel = ctx.http.get_channel(ChannelId::from(*channel_id)).await?;

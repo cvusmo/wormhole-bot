@@ -13,11 +13,6 @@ pub fn load_feeds() -> Result<HashMap<String, u64>, Box<dyn Error>> {
         .parse()
         .map_err(|e| format!("Failed to parse CHANNEL_ID: {e}"))?;
 
-    //let discord_token: u64 = std::env::var("DISCORD_TOKEN")
-    //.expect("Expected DISCORD_TOKEN in .secrets")
-    //.parse()
-    //.map_err(|e| format!("Failed to parse DISCORD_TOKEN: {}", e))?;
-
     let mut feeds = HashMap::new();
     feeds.insert(
         "https://status.robertsspaceindustries.com/index.xml".to_string(),
