@@ -1,5 +1,7 @@
 // ~/src/feed.rs
 
+use crate::logger;
+
 use rss::Channel;
 use rss::validation::Validate;
 use serenity::model::id::ChannelId;
@@ -10,6 +12,7 @@ use std::error::Error;
 use tokio::time::{interval, Duration};
 
 pub async fn feed_fetch(url: &str) -> Result<Channel, Box<dyn Error>> {
+    logger::log_info(&format!("Fetching RSS from: {url}"));
     let content = reqwest::get(url).await?.bytes().await?;
     let channel = Channel::read_from(&content[..])?;
     channel.validate()?;
@@ -35,8 +38,10 @@ pub async fn feed_interval(
     ctx: Context,
     last_entry_ids: &mut HashMap<String, String>,
 ) -> Result<(), Box<dyn Error>> {
-    let mut interval = interval(Duration::from_secs(300));
+
+    let mut interval = interval(Duration::from_secs(600));
     
+    // Endless loop... THIS is a problem
     loop {
         interval.tick().await;
         for (url, channel_id) in &feeds {
@@ -59,5 +64,4 @@ pub async fn feed_interval(
             }
         }
     }
-    Ok(())
 }

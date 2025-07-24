@@ -8,15 +8,26 @@ pub fn load_feeds() -> Result<HashMap<String, u64>, Box<dyn Error>> {
     let secrets_path = home_dir.join(".secrets");
     dotenv::from_path(&secrets_path).map_err(|e| format!("Failed to load .secrets: {e}"))?;
 
-    let channel_id: u64 = std::env::var("CHANNEL_ID")
-        .expect("Expected CHANNEL_ID in .secrets")
-        .parse()
-        .map_err(|e| format!("Failed to parse CHANNEL_ID: {e}"))?;
-
     let mut feeds = HashMap::new();
+
+    // Load first channel and feed
+    let channel_id_1: u64 = std::env::var("CHANNEL_ID_1")
+        .expect("Expected CHANNEL_ID_1 in .secrets")
+        .parse()
+        .map_err(|e| format!("Failed to parse CHANNEL_ID_1: {e}"))?;
     feeds.insert(
         "https://status.robertsspaceindustries.com/index.xml".to_string(),
-        channel_id,
+        channel_id_1,
+    );
+
+    // Load second channel and feed
+    let channel_id_2: u64 = std::env::var("CHANNEL_ID_2")
+        .expect("Expected CHANNEL_ID_2 in .secrets")
+        .parse()
+        .map_err(|e| format!("Failed to parse CHANNEL_ID_2: {e}"))?;
+    feeds.insert(
+        "https://archlinux.org/feeds/packages/all/core/".to_string(),
+        channel_id_2,
     );
 
     Ok(feeds)
