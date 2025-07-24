@@ -1,12 +1,13 @@
 // ~/src/handler.rs 
 
+use crate::logger::{log_info, log_error};
+
 use serenity::async_trait;
+use serenity::builder::CreateMessage;
 use serenity::model::channel::Message;
 use serenity::model::gateway::Ready;
-use serenity::model::id::ChannelId;
 use serenity::prelude::*;
 use std::collections::HashMap;
-use std::error::Error;
 use tokio::time::Duration;
 
 pub struct Handler {
@@ -17,13 +18,13 @@ pub struct Handler {
 #[async_trait]
 impl EventHandler for Handler {
     async fn ready(&self, ctx: Context, ready: Ready) {
-        log_info(&format("{} is connected!", ready.user.name));
+        log_info(&format!("{} is connected!", ready.user.name));
 
         let ctx = ctx.clone();
         let mut handler = self.clone();
         tokio::spawn(async move {
-            if let Err(e) = crate::feed::interval_feed(handler.feeds, ctx, &mut handler.last_entry_ids).await {
-                log_error(&format!("Error checking RSS: {:?}", e));
+            if let Err(e) = crate::feed::feed_interval(handler.feeds, ctx, &mut handler.last_entry_ids).await {
+                log_error(&format!("Error checking RSS: {e:?}"));
             }
         });
     }
@@ -31,9 +32,9 @@ impl EventHandler for Handler {
     async fn message(&self, ctx: Context, msg: Message) {
         if msg.content == "!rss" {
             log_info(&format!("Receieved !rss command from {}", msg.author.name));
-            let channel_id = ChannelId::from(self.feeds.values().next().unwrap_or(&0));
+            let channel_id = self.feeds.values().next().copied().unwrap_or(0);
 
-            if let Ok(channel) = ctx.http.get_channel(channel_id).await {
+            if let Ok(channel) = ctx.http.get_channel(channel_id.into()).await {
                 if let Some(guild_channel) = channel.guild() {
                     let _ = guild_channel
                         .send_message(&ctx.http, CreateMessage::new().content("Checking RSS feed..."))

@@ -9,9 +9,9 @@ pub fn init_logger() {
 }
 
 pub fn log_info(msg: &str) {
-    info!("{}", msg);
+    info!("{msg}");
 }
 
 pub fn log_error(msg: &str) {
-    error!("{}", msg);
+    error!("{msg}");
 }
