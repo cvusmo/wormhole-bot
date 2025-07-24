@@ -12,8 +12,13 @@ async fn main() -> Result<(), Box<dyn Error>> {
     logger::init_logger();
     logger::log_info("Starting wormhole-rss...");
 
+    // Load .secrets explicitly
+    let home_dir = dirs::home_dir().ok_or("Could not find home directory")?;
+    let secrets_path = home_dir.join(".secrets");
+    dotenv::from_path(&secrets_path).map_err(|e| format!("Failed to load .secrets: {e}"))?;
+
     // Load config from .secrets
-    let discord_token = env::var("DICORD_TOKEN").expect("Expected DISCORD_TOKEN in .secrets");
+    let discord_token = env::var("DISCORD_TOKEN").expect("Expected DISCORD_TOKEN in .secrets");
 
     // Load feeds
     let feeds = feed_config::load_feeds()?;
@@ -27,10 +32,9 @@ async fn main() -> Result<(), Box<dyn Error>> {
         .await?;
 
     logger::log_info("Client built, starting...");
-    if let Err(e) = client.start().await {
-        logger::log_error(&format!("Client error: {e:?}"));
+    if let Err(why) = client.start().await {
+        logger::log_error(&format!("Client error: {:?}", why));
     }
 
     Ok(())
-
 }
