@@ -1,13 +1,15 @@
 [package]
 name = "wormhole-rss"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [dependencies]
 chrono = "0.4.41"
 dirs = "6.0.0"
 dotenv = "0.15.0"
-rss = { version = "2.0.12", features = ["validation"] }
+env_logger = "0.11.8"
+log = "0.4.27"
 reqwest = { version = "0.12.22", features = ["json"] }
-tokio = { version = "1.46.1", features = ["full"] }
+rss = { version = "2.0.12", features = ["validation"] }
 serenity = { version = "0.12.4", features = ["client", "gateway", "rustls_backend", "builder"] }
+tokio = { version = "1.46.1", features = ["full"] }
