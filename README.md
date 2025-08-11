@@ -1,2 +1,2 @@
-# wormhole-rss
-wormhole discord bot
+# wormhole-bot
+wormhole bot
